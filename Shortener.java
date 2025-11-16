@@ -21,10 +21,12 @@ public class Shortener{
                     if(url.getScheme().equals("http") || url.getScheme().equals("https")){
                         if(url.getHost() != null && !url.getHost().isEmpty()){
                             System.out.println("Link is valid");
+                        } else {
+                            System.out.println("link is invalid. Try again.");
                         }
                     }
                 } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                   e.printStackTrace();
                 }
             }
             
