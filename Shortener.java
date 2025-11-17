@@ -15,21 +15,13 @@ public class Shortener{
                 break;
             } else if (userUrl != null && !userUrl.isEmpty()){
                 String trimmedUrl = userUrl.trim();
-    
+
                 try {
-                    URI url = new URI(trimmedUrl);
-                    if(url.getHost() != null && !url.getHost().isEmpty()){
-                        if(url.getScheme().equals("http") || url.getScheme().equals("https")){
-                            System.out.println("Link is valid");
-                        } else {
-                            System.out.println("link is invalid. Try again.");
-                        }
-                    } else {
-                        System.out.println("bad url");
+                    new URI(trimmedUrl).parseServerAuthority();
+                        System.out.println("valid url");
+                    } catch (URISyntaxException e) {
+                        System.out.println("invalid url");
                     }
-                } catch (URISyntaxException e) {
-                   e.printStackTrace();
-                }
             }
             
         }
