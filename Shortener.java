@@ -37,7 +37,7 @@ public class Shortener{
             }
             
             System.out.println("here" + " " + sb);
-                // sb = "";
+                sb = "";
             }
             scanner.close();
     }
