@@ -28,12 +28,12 @@ public class Shortener{
                 
                 nextId++;
                 if(nextId > 0){
-                    sb.append(chars.charAt((int) (nextId % 62)));
+                    sb.insert(0, chars.charAt((int) (nextId % 62)));
                     nextId /= 62;
                 }
-                System.out.println("here" + " " + sb.reverse().toString());
             }
             
+            System.out.println("here" + " " + sb.reverse().toString());
         }
             scanner.close();
     }
