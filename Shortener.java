@@ -31,10 +31,10 @@ public class Shortener{
                 value = nextId;
                 while(value > 0){
                     int remainder = (int) (value % 62);
-                    sb.append(chars.charAt(remainder));
+                    sb.insert(0, chars.charAt(remainder));
                     value /= 62;
                 }
-                System.out.println(sb.reverse().toString());
+                System.out.println(sb.toString());
                 sb.setLength(0);
             }
             
