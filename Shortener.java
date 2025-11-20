@@ -7,9 +7,8 @@ public class Shortener{
         Scanner scanner = new Scanner(System.in);
         String userUrl = "";
         String trimmedUrl;
-        int nextId = 0;
-        // StringBuilder sb = new StringBuilder();
-        String sb = "";
+        int nextId = 1;
+        StringBuilder sb = new StringBuilder(1);
         String chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int remainder = 0;
 
@@ -28,17 +27,17 @@ public class Shortener{
                         System.out.println("invalid url");
                     }
                 
-                nextId++;
-                if(nextId > 0){
-                    remainder = nextId % 62;
-                    sb = String.valueOf(chars.charAt(remainder)) + sb;
+                while(nextId > 0){
+                    sb.insert(0, chars.charAt((int) (nextId % 62)));
                     nextId /= 62;
+                    nextId++;
                 }
+                System.out.println(sb.toString());
             }
             
-            System.out.println("here" + " " + sb);
-                sb = "";
-            }
+        }
+        System.out.println("here" + " " + sb);
+            // sb = "";
             scanner.close();
     }
 
