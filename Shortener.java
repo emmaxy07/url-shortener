@@ -39,13 +39,19 @@ public class Shortener{
                 String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
                 longUrl = domainBuild + "/" + sb.toString();
                 UrlRecord urlRecord = new UrlRecord(longUrl);
-                storeRecord.put(sb.toString(), urlRecord);
-
-                for(Map.Entry<String, UrlRecord> entry: storeRecord.entrySet()){
-                   String key = entry.getKey().toString();
-                   UrlRecord value = entry.getValue();
-                   System.out.println("key " + key + " value " + value);
+                if(storeRecord.isEmpty()){
+                    storeRecord.put(sb.toString(), urlRecord);
+                } else {
+                       if(storeRecord.containsKey(sb.toString())){
+                        StringBuilder newSb = generateId(nextId);
+                        longUrl = domainBuild + "/" + newSb.toString();
+                        UrlRecord urlRecordVal = new UrlRecord(longUrl);
+                        storeRecord.put(newSb.toString(), urlRecordVal);
+                       } else {
+                        storeRecord.put(sb.toString(), urlRecord);
+                       }
                 }
+
                 sb.setLength(0);
 
             }
