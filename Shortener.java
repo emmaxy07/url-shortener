@@ -1,15 +1,20 @@
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Shortener{
-    public static void main(String[] args) {
+    
+    public static void main(String[] args) throws URISyntaxException {
         Scanner scanner = new Scanner(System.in);
         String userUrl = "";
         String trimmedUrl;
-        StringBuilder sb = new StringBuilder();
-        String chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int nextId = 0;
+        String longUrl = "";
+        ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
+
+        
 
         while (true) {    
             System.out.print("Input your url: ");
@@ -26,29 +31,39 @@ public class Shortener{
                         System.out.println("invalid url");
                     }
                 
-                int value;
                 nextId++;
+                StringBuilder sb = generateId(nextId);
+
+                URI uri = new URI(trimmedUrl);
+                String domain = uri.getHost();
+                String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
+                longUrl = domainBuild + "/" + sb.toString();
+                UrlRecord urlRecord = new UrlRecord(longUrl);
+                storeRecord.put(sb.toString(), urlRecord);
+
+                for(Map.Entry<String, UrlRecord> entry: storeRecord.entrySet()){
+                   String key = entry.getKey().toString();
+                   UrlRecord value = entry.getValue();
+                   System.out.println("key " + key + " value " + value);
+                }
+                sb.setLength(0);
+
+            }
+            
+        }
+            scanner.close();
+    }
+
+    static StringBuilder generateId(int nextId){
+        int value;
+        StringBuilder sb = new StringBuilder();
+        String chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 value = nextId;
                 while(value > 0){
                     int remainder = (int) (value % 62);
                     sb.insert(0, chars.charAt(remainder));
                     value /= 62;
                 }
-                System.out.println(sb.toString());
-                sb.setLength(0);
-            }
-            
-        }
-        System.out.println("here" + " " + sb);
-            // sb = "";
-            scanner.close();
-    }
-
-    static void generateId(String trimmedUrl){
-        // int nextId = 0;
-        
-        // nextId = nextId + 1;
-        // if(nextId)
-        
+        return sb;
     }
 }
