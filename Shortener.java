@@ -1,8 +1,14 @@
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 
 public class Shortener{
     
@@ -11,7 +17,7 @@ public class Shortener{
         String userUrl = "";
         String trimmedUrl;
         int nextId = 0;
-        String longUrl = "";
+        String shortUrl = "";
         ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
 
         
@@ -37,15 +43,15 @@ public class Shortener{
                 URI uri = new URI(trimmedUrl);
                 String domain = uri.getHost();
                 String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
-                longUrl = domainBuild + "/" + sb.toString();
-                UrlRecord urlRecord = new UrlRecord(longUrl);
+                shortUrl = domainBuild + "/" + sb.toString();
+                UrlRecord urlRecord = new UrlRecord(shortUrl);
                 if(storeRecord.isEmpty()){
                     storeRecord.put(sb.toString(), urlRecord);
                 } else {
                        if(storeRecord.containsKey(sb.toString())){
                         StringBuilder newSb = generateId(nextId);
-                        longUrl = domainBuild + "/" + newSb.toString();
-                        UrlRecord urlRecordVal = new UrlRecord(longUrl);
+                        shortUrl = domainBuild + "/" + newSb.toString();
+                        UrlRecord urlRecordVal = new UrlRecord(shortUrl);
                         storeRecord.put(newSb.toString(), urlRecordVal);
                        } else {
                         storeRecord.put(sb.toString(), urlRecord);
@@ -53,6 +59,16 @@ public class Shortener{
                 }
 
                 sb.setLength(0);
+
+                try {
+                    HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
+                    httpServer.createContext("/");
+
+                    httpServer.setExecutor(null);
+                    httpServer.start();
+                } catch(IOException e){
+                    System.out.println("Error starting the server: " + e.getMessage());
+                }
 
             }
             
