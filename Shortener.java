@@ -18,6 +18,7 @@ public class Shortener{
         String trimmedUrl;
         int nextId = 0;
         String shortUrl = "";
+        String userInput = "";
         ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
 
         
@@ -62,18 +63,38 @@ public class Shortener{
 
                 try {
                     HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
-                    httpServer.createContext("/");
+                    httpServer.createContext("/", new MyHandler());
 
                     httpServer.setExecutor(null);
                     httpServer.start();
+                    System.out.println("Server is running on port 8000");
                 } catch(IOException e){
                     System.out.println("Error starting the server: " + e.getMessage());
+                }
+
+                while(true){
+                    System.out.print("Do you want to get the short url? ");
+                    userInput = scanner.nextLine();
+                    if(userInput.equals("Yes")){
+                        System.out.print("Here is the short url: " + shortUrl + "\n");
+                    }
                 }
 
             }
             
         }
             scanner.close();
+    }
+
+    static class MyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String response = "";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
     }
 
     static StringBuilder generateId(int nextId){
