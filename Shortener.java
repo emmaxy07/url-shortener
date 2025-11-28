@@ -66,15 +66,15 @@ public class Shortener{
                 sb.setLength(0);
 
                 try {
-                    // HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
-                    // httpServer.createContext("/", new MyHandler());
+                    HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
+                    httpServer.createContext("/", new MyHandler("/new"));
 
-                    // httpServer.setExecutor(null);
-                    // httpServer.start();
-                    // System.out.println("Server is running on port 8000");
-                    // URL url = uri.toURL(shortUrl);
-                    // URL url = uri.toURL();
-                    // HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+                    httpServer.setExecutor(null);
+                    httpServer.start();
+                    System.out.println("Server is running on port 8000");
+                    URL url = uri.toURL(shortUrl);
+                    URL url = uri.toURL();
+                    HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
                     
                 } catch(IOException e){
                     System.out.println("Error starting the server: " + e.getMessage());
@@ -94,6 +94,29 @@ public class Shortener{
             
         }
             scanner.close();
+    }
+
+    static class RedirectHandler implements HttpHandler {
+    
+        private final String newPath;
+
+        public RedirectHandler(String newPath){
+            this.newPath = newPath;
+        }
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            exchange.getResponseHeaders().set("Location", newPath);
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'handle'");
+        }
+    }
+
+    static class newPageHandler {
+    
+        
     }
 
     
