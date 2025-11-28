@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 
 public class Shortener{
-    
+    static ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
     public static void main(String[] args) throws URISyntaxException {
         Scanner scanner = new Scanner(System.in);
         String userUrl = "";
@@ -23,7 +23,6 @@ public class Shortener{
         int nextId = 0;
         String shortUrl = "";
         String userInput = "";
-        ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
 
         
 
@@ -64,19 +63,7 @@ public class Shortener{
                        }
                 }
 
-                sb.setLength(0);
-
-                try {
-                    HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
-                    httpServer.createContext("/", new RedirectHandler(sb.toString()));
-
-                    
-                    httpServer.setExecutor(null); 
-                    httpServer.start();
-                    System.out.println("Server started at http://localhost:8080");
-                } catch(IOException e){
-                    System.out.println("Error starting the server: " + e.getMessage());
-                } 
+                sb.setLength(0); 
 
                 while(true){
                     System.out.print("Do you want to get the short url? ");
@@ -93,20 +80,26 @@ public class Shortener{
     }
 
     static class RedirectHandler implements HttpHandler {
-    
-        private final String newPath;
-
-        public RedirectHandler(String newPath){
-            this.newPath = newPath;
-        }
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            exchange.getResponseHeaders().set("Location", newPath);
-            exchange.getRequestURI().getQuery();
-            exchange.sendResponseHeaders(302, -1);
-            exchange.close();
-            throw new UnsupportedOperationException("Unimplemented method 'handle'");
+            URI uri = exchange.getRequestURI();
+            String path = uri.getPath();
+
+            String shortCode = path.substring(1);
+            String response = path;
+            UrlRecord longUrl = storeRecord.get(shortCode);
+            if(longUrl == null){
+                System.out.println("Url not found");
+                exchange.sendResponseHeaders(404, 0);
+                exchange.close();
+                return;
+            } else {
+                exchange.getResponseHeaders().set("Location", longUrl);
+                exchange.sendResponseHeaders(302, -1);
+                exchange.close();
+            }
+            exchange.sendResponseHeaders(200, response.getBytes().length);
         }
     }
 
