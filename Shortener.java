@@ -75,9 +75,7 @@ public class Shortener{
                     // URL url = uri.toURL(shortUrl);
                     // URL url = uri.toURL();
                     // HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-                    HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
-                    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(shortUrl)).build();
-                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    
                 } catch(IOException e){
                     System.out.println("Error starting the server: " + e.getMessage());
                 } catch (InterruptedException e) {
@@ -98,16 +96,7 @@ public class Shortener{
             scanner.close();
     }
 
-    static class MyHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String response = "";
-            exchange.sendResponseHeaders(200, response.length());
-            OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-        }
-    }
+    
 
     static StringBuilder generateId(int nextId){
         int value;
