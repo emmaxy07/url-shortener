@@ -67,20 +67,16 @@ public class Shortener{
 
                 try {
                     HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
-                    httpServer.createContext("/", new MyHandler("/new"));
+                    httpServer.createContext("/", new RedirectHandler(shortUrl));
 
-                    httpServer.setExecutor(null);
+                    httpServer.createContext(trimmedUrl, new NewPageHandler());
+
+                    httpServer.setExecutor(null); 
                     httpServer.start();
-                    System.out.println("Server is running on port 8000");
-                    URL url = uri.toURL(shortUrl);
-                    URL url = uri.toURL();
-                    HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-                    
+                    System.out.println("Server started at http://localhost:8080");
                 } catch(IOException e){
                     System.out.println("Error starting the server: " + e.getMessage());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                } 
 
                 while(true){
                     System.out.print("Do you want to get the short url? ");
@@ -114,7 +110,18 @@ public class Shortener{
         }
     }
 
-    static class newPageHandler {
+    static class NewPageHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String response = "You have been redirected to the new page";
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+            try(OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'handle'");
+        }
     
         
     }
