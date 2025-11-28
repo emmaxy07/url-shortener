@@ -84,7 +84,8 @@ public class Shortener{
 
             String shortCode = path.substring(1);
             String response = path;
-            UrlRecord longUrl = storeRecord.get(shortCode);
+            UrlRecord urlRecord = storeRecord.get(shortCode);
+            String longUrl = urlRecord.getlongUrl();
             if(longUrl == null){
                 System.out.println("Url not found");
                 exchange.sendResponseHeaders(404, 0);
@@ -92,7 +93,7 @@ public class Shortener{
                 return;
             } else {
                 System.out.println(longUrl);
-                exchange.getResponseHeaders().set("Location", longUrl.toString());
+                exchange.getResponseHeaders().set("Location", longUrl);
                 exchange.sendResponseHeaders(302, -1);
                 exchange.close();
             }
