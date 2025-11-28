@@ -19,7 +19,7 @@ public class Shortener{
     public static void main(String[] args) throws URISyntaxException {
         Scanner scanner = new Scanner(System.in);
         String userUrl = "";
-        String trimmedUrl;
+        String longUrl;
         int nextId = 0;
         String shortUrl = "";
         String userInput = "";
@@ -33,10 +33,10 @@ public class Shortener{
             if(userUrl.equals("exit")){
                 break;
             } else if (userUrl != null && !userUrl.isEmpty()){
-                trimmedUrl = userUrl.trim();
+                longUrl = userUrl.trim();
 
                 try {
-                    new URI(trimmedUrl).parseServerAuthority();
+                    new URI(longUrl).parseServerAuthority();
                         System.out.println("valid url");
                     } catch (URISyntaxException e) {
                         System.out.println("invalid url");
@@ -45,18 +45,19 @@ public class Shortener{
                 nextId++;
                 StringBuilder sb = generateId(nextId);
 
-                URI uri = new URI(trimmedUrl);
+                URI uri = new URI(longUrl);
+                System.out.println(uri);
                 String domain = uri.getHost();
                 String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
                 shortUrl = "https://bit.ly/" + domainBuild + "/" + sb.toString();
-                UrlRecord urlRecord = new UrlRecord(shortUrl);
+                UrlRecord urlRecord = new UrlRecord(longUrl);
                 if(storeRecord.isEmpty()){
                     storeRecord.put(sb.toString(), urlRecord);
                 } else {
                        if(storeRecord.containsKey(sb.toString())){
                         StringBuilder newSb = generateId(nextId);
                         shortUrl = domainBuild + "/" + newSb.toString();
-                        UrlRecord urlRecordVal = new UrlRecord(shortUrl);
+                        UrlRecord urlRecordVal = new UrlRecord(longUrl);
                         storeRecord.put(newSb.toString(), urlRecordVal);
                        } else {
                         storeRecord.put(sb.toString(), urlRecord);
@@ -67,10 +68,9 @@ public class Shortener{
 
                 try {
                     HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
-                    httpServer.createContext("/", new RedirectHandler(shortUrl));
+                    httpServer.createContext("/", new RedirectHandler(sb.toString()));
 
-                    httpServer.createContext(trimmedUrl, new NewPageHandler());
-
+                    
                     httpServer.setExecutor(null); 
                     httpServer.start();
                     System.out.println("Server started at http://localhost:8080");
@@ -103,27 +103,11 @@ public class Shortener{
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             exchange.getResponseHeaders().set("Location", newPath);
+            exchange.getRequestURI().getQuery();
             exchange.sendResponseHeaders(302, -1);
             exchange.close();
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'handle'");
         }
-    }
-
-    static class NewPageHandler implements HttpHandler {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String response = "You have been redirected to the new page";
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-            try(OutputStream os = exchange.getResponseBody()) {
-                os.write(response.getBytes());
-            }
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'handle'");
-        }
-    
-        
     }
 
     
