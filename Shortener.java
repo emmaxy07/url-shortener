@@ -5,13 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
+
 import java.net.InetSocketAddress;
 
 public class Shortener{
@@ -21,10 +16,20 @@ public class Shortener{
         String userUrl = "";
         String longUrl;
         int nextId = 0;
-        String shortUrl = "";
-        String userInput = "";
+        // String shortUrl = "";
 
-        
+         try {
+                        HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
+                        httpServer.createContext("/", new RedirectHandler());
+    
+                        
+                        httpServer.setExecutor(null); 
+                        httpServer.start();
+                        System.out.println("Server started at http://localhost:8000");
+                    } catch(IOException e){
+                        System.out.println("Error starting the server: " + e.getMessage());
+                    }
+
 
         while (true) {    
             System.out.print("Input your url: ");
@@ -48,14 +53,14 @@ public class Shortener{
                 System.out.println(uri);
                 String domain = uri.getHost();
                 String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
-                shortUrl = "https://bit.ly/" + domainBuild + "/" + sb.toString();
+                // shortUrl = "https://bit.ly" + "/" + sb.toString();
                 UrlRecord urlRecord = new UrlRecord(longUrl);
                 if(storeRecord.isEmpty()){
                     storeRecord.put(sb.toString(), urlRecord);
                 } else {
                        if(storeRecord.containsKey(sb.toString())){
                         StringBuilder newSb = generateId(nextId);
-                        shortUrl = domainBuild + "/" + newSb.toString();
+                        // shortUrl = domainBuild + "/" + newSb.toString();
                         UrlRecord urlRecordVal = new UrlRecord(longUrl);
                         storeRecord.put(newSb.toString(), urlRecordVal);
                        } else {
@@ -63,18 +68,9 @@ public class Shortener{
                        }
                 }
 
+                System.out.println("http://localhost:8000/" + sb.toString());
                 sb.setLength(0); 
-
-                while(true){
-                    System.out.print("Do you want to get the short url? ");
-                    userInput = scanner.nextLine();
-                    if(userInput.equals("Yes")){
-                        System.out.print("Here is the short url: " + shortUrl + "\n");
-                    }
-                }
-
             }
-            
         }
             scanner.close();
     }
@@ -95,7 +91,8 @@ public class Shortener{
                 exchange.close();
                 return;
             } else {
-                exchange.getResponseHeaders().set("Location", longUrl);
+                System.out.println(longUrl);
+                exchange.getResponseHeaders().set("Location", longUrl.toString());
                 exchange.sendResponseHeaders(302, -1);
                 exchange.close();
             }
