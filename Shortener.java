@@ -51,7 +51,7 @@ public class Shortener{
 
                 URI uri = new URI(longUrl);
                 System.out.println(uri);
-                String domain = uri.getHost();
+                // String domain = uri.getHost();
                 // String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
                 // shortUrl = "https://bit.ly" + "/" + sb.toString();
                 UrlRecord urlRecord = new UrlRecord(longUrl);
