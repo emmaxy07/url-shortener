@@ -11,12 +11,13 @@ import java.net.InetSocketAddress;
 
 public class Shortener{
     static ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
+    static int count = 0;
+
     public static void main(String[] args) throws URISyntaxException {
         Scanner scanner = new Scanner(System.in);
         String userUrl = "";
         String longUrl;
         int nextId = 0;
-        // String shortUrl = "";
 
          try {
                         HttpServer httpServer = HttpServer.create(new InetSocketAddress(8000), 0);
@@ -51,16 +52,12 @@ public class Shortener{
 
                 URI uri = new URI(longUrl);
                 System.out.println(uri);
-                // String domain = uri.getHost();
-                // String domainBuild = domain.startsWith("www.") ? domain.substring(4) : domain;
-                // shortUrl = "https://bit.ly" + "/" + sb.toString();
                 UrlRecord urlRecord = new UrlRecord(longUrl);
                 if(storeRecord.isEmpty()){
                     storeRecord.put(sb.toString(), urlRecord);
                 } else {
                        if(storeRecord.containsKey(sb.toString())){
                         StringBuilder newSb = generateId(nextId);
-                        // shortUrl = domainBuild + "/" + newSb.toString();
                         UrlRecord urlRecordVal = new UrlRecord(longUrl);
                         storeRecord.put(newSb.toString(), urlRecordVal);
                        } else {
@@ -93,11 +90,16 @@ public class Shortener{
                 return;
             } else {
                 System.out.println(longUrl);
+
                 exchange.getResponseHeaders().set("Location", longUrl);
                 exchange.sendResponseHeaders(302, -1);
                 exchange.close();
             }
             exchange.sendResponseHeaders(200, response.getBytes().length);
+            if(exchange.getResponseCode() == 200){
+                urlRecord.setRedirectCount(count);
+                System.out.println("Redirect count: " + count);
+            }
         }
     }
 
