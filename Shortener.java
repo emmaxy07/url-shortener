@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
 
 public class Shortener{
     static ConcurrentHashMap <String, UrlRecord> storeRecord = new ConcurrentHashMap<String, UrlRecord>();
-    static int count = 0;
 
     public static void main(String[] args) throws URISyntaxException {
         Scanner scanner = new Scanner(System.in);
@@ -97,6 +96,7 @@ public class Shortener{
             }
             exchange.sendResponseHeaders(200, response.getBytes().length);
             if(exchange.getResponseCode() == 200){
+                int count = urlRecord.getRedirectCount();
                 urlRecord.setRedirectCount(count);
                 System.out.println("Redirect count: " + count);
             }
