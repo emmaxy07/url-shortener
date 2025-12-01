@@ -89,16 +89,13 @@ public class Shortener{
                 return;
             } else {
                 System.out.println(longUrl);
-
+                int count = urlRecord.getRedirectCount();
+                count++;
+                urlRecord.setRedirectCount(count);
+                System.out.println("Redirect count: " + count);
                 exchange.getResponseHeaders().set("Location", longUrl);
                 exchange.sendResponseHeaders(302, -1);
                 exchange.close();
-            }
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-            if(exchange.getResponseCode() == 200){
-                int count = urlRecord.getRedirectCount();
-                urlRecord.setRedirectCount(count);
-                System.out.println("Redirect count: " + count);
             }
         }
     }

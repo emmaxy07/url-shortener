@@ -28,7 +28,7 @@ public class UrlRecord {
     }
 
     public void setRedirectCount(int redirectCount) {
-        this.redirectCount = redirectCount + 1;
+        this.redirectCount = redirectCount;
     }
 
     public LocalDateTime getLastAccessedAt() {
