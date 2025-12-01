@@ -1,10 +1,11 @@
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class UrlRecord {
     private final String longUrl;
     private final LocalDateTime createdAt;
     private int redirectCount;
-    private LocalDateTime lastAccessedAt;
+    private Instant lastAccessedAt;
     private boolean isActive;
 
     public UrlRecord(String longUrl) {
@@ -31,12 +32,12 @@ public class UrlRecord {
         this.redirectCount = redirectCount;
     }
 
-    public LocalDateTime getLastAccessedAt() {
+    public Instant getLastAccessedAt() {
         return lastAccessedAt;
     }
 
-    public void setLastAccessedAt(LocalDateTime lastAccessedAt) {
-        this.lastAccessedAt = lastAccessedAt;
+    public void setLastAccessedAt(Instant timeLinkIsAccessedLast) {
+        this.lastAccessedAt = timeLinkIsAccessedLast;
     }
 
     public boolean isActive() {

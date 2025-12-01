@@ -1,5 +1,6 @@
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import com.sun.net.httpserver.HttpServer;
@@ -79,7 +80,6 @@ public class Shortener{
             String path = uri.getPath();
 
             String shortCode = path.substring(1);
-            String response = path;
             UrlRecord urlRecord = storeRecord.get(shortCode);
             String longUrl = urlRecord.getlongUrl();
             if(longUrl == null){
@@ -95,6 +95,8 @@ public class Shortener{
                 System.out.println("Redirect count: " + count);
                 exchange.getResponseHeaders().set("Location", longUrl);
                 exchange.sendResponseHeaders(302, -1);
+                Instant timeLinkIsAccessedLast = Instant.now();
+                urlRecord.setLastAccessedAt(timeLinkIsAccessedLast);
                 exchange.close();
             }
         }
