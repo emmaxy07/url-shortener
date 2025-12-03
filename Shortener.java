@@ -55,6 +55,8 @@ public class Shortener{
                 UrlRecord urlRecord = new UrlRecord(longUrl);
                 if(storeRecord.isEmpty()){
                     storeRecord.put(sb.toString(), urlRecord);
+                    urlRecord.getCreatedAt();
+                    System.out.println(urlRecord.getCreatedAt());
                 } else {
                        if(storeRecord.containsKey(sb.toString())){
                         StringBuilder newSb = generateId(nextId);
@@ -97,6 +99,7 @@ public class Shortener{
                 exchange.sendResponseHeaders(302, -1);
                 Instant timeLinkIsAccessedLast = Instant.now();
                 urlRecord.setLastAccessedAt(timeLinkIsAccessedLast);
+                
                 exchange.close();
             }
         }
